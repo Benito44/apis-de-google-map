@@ -10,5 +10,29 @@
     <body>
         <h2>Mapa Catalunya</h2>
         <div id="mapa" class="mapa"></div>
+        <form id="searchForm">
+            <label for="cemidInput">Buscar por CEMID:</label>
+            <input type="text" id="cemidInput" name="cemid">
+            <br><br>
+            <label for="CemeteryName">Buscar por CemeteryName:</label>
+            <input type="text" id="CemeteryName" name="cemetery">
+            <br><br>
+            <label for="MailingAddressStreet">Buscar por MailingAddressStreet:</label>
+            <input type="text" id="MailingAddressStreet" name="mailing">
+            <br><br>
+            <label for="VillageMuniCode">Buscar por VillageMuniCode:</label>
+            <input type="text" id="VillageMuniCode" name="village">
+            <br><br>
+            <button type="submit">Buscar</button>
+        </form>
+        <div id="">
+            <table border="1" >
+                <tr>
+                    <th>CEMID</th><th>CemeteryName</th><th>MailingAddressStreet</th><th>VillageMuniCode</th>
+                </tr>
+                <tbody id="tableContainer">
+
+                </tbody>
+        </div>
     </body>
 </html>

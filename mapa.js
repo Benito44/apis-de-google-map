@@ -35,86 +35,55 @@ function crearMapa() {
 
 window.crearMapa = crearMapa;    // Necessari si s'utilitzen mòduls
 
-
-
-
-async function fetchDataSequentially() {
-    const startTime = Date.now();
-
-    try {
-        const response1 = await fetch(url1,{method:"GET"}).then(response1 => response1.json());
-        const response2 = await fetch(url2,{method:"GET"}).then(response2 => response2.json());
-        const response3 = await fetch(url3,{method:"GET"}).then(response3 => response3.json());
-        const response4 = await fetch(url4,{method:"GET"}).then(response4 => response4.json());
-
-        
-         function selectsResultats(nom, response){
-            console.log(nom);
-            let variable = document.getElementById(nom);
-            for (let i = 0; i < response.length; i++){
-                const option = document.createElement("option");
-                option.text = response[i].nom;
-                variable.appendChild(option);
-        
-            }
-        }
-/*
-        let variable = document.getElementById("borough_name");
-        for (let i = 0; i < response1.length; i++){
-            const option = document.createElement("option");
-            option.text = response1[i].borough_name;
-            variable.appendChild(option);
-    
-        }
-*/
-               
-                selectsResultats("borough_name",response1);
-
-                 /*selectsResultats("public_space_open_space");
-                selectsResultats("public_space_open_space_name");
-                selectsResultats("provider");
-                */
-
-        const endTime = Date.now();
-        console.log('Datos obtenidos secuencialmente:');
-        console.log('Datos de borough_name:', response1);
-        console.log('Datos de public_space_open_space:', response2);
-        console.log('Datos de public_space_open_space_name:', response3);
-        console.log('Datos de provider:', response4);
-        console.log('Tiempo transcurrido (milisegundos):', endTime - startTime);
-    } catch (error) {
-        console.error('Error en la solicitud:', error);
-    }
-}
 const url1 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct CEMID';
 const url2 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct CemeteryName';
 const url3 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct MailingAddressStreet';
 const url4 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct VillageMuniCode';
-
-async function fetchDataConcurrently() {
-    const startTime = Date.now();
-
+async function fetchDataConcurrently(cemid,cemetery,mailing,village) {
     try {
-        const [response1, response2, response3, response4] = await Promise.allSettled([
-            fetch(url1,{method:"GET"}).then(response1 => response1.json()),
-            fetch(url2,{method:"GET"}).then(response2 => response2.json()),
-            fetch(url3,{method:"GET"}).then(response3 => response3.json()),
-            fetch(url4,{method:"GET"}).then(response4 => response4.json())
+        const [response1, response2, response3, response4] = await Promise.all([
+            fetch(url1).then(response => response.json()),
+            fetch(url2).then(response => response.json()),
+            fetch(url3).then(response => response.json()),
+            fetch(url4).then(response => response.json())
         ]);
 
-        const endTime = Date.now();
-        console.log('Datos obtenidos simultáneamente:');
-        console.log('Datos de CEMID:', response1);
-        console.log('Datos de CemeteryName:', response2);
-        console.log('Datos de MailingAddressStreet:', response3);
-        console.log('Datos de VillageMuniCode:', response4);
-        console.log('Tiempo transcurrido (milisegundos):', endTime - startTime);
-        
+        // Guardar los datos de cada respuesta en variables
+        const data1 = response1.map(item => item.CEMID);
+        const data2 = response2.map(item => item.CemeteryName);
+        const data3 = response3.map(item => item.MailingAddressStreet);
+        const data4 = response4.map(item => item.VillageMuniCode);
+
+        // Buscar el índice correspondiente al CEMID especificado
+        const index = data1.indexOf(cemid);
+        let tableHTML = "";
+        if (index !== -1) {
+            const cemidValue = data1[index] !== undefined ? data1[index] : "";
+            const cemeteryNameValue = data2[index] !== undefined ? data2[index] : "";
+            const mailingAddressValue = data3[index] !== undefined ? data3[index] : "";
+            const villageMuniCodeValue = data4[index] !== undefined ? data4[index] : "";
+            tableHTML = `<tr><td>${cemidValue}</td><td>${cemeteryNameValue}</td><td>${mailingAddressValue}</td><td>${villageMuniCodeValue}</td></tr>`;
+        } else {
+            alert("No s'ha trobat cap registre amb aquestes dades");
+        }
+
+        // Agregar la nueva fila a la tabla HTML
+        const tableContainer = document.getElementById('tableContainer');
+        const newRow = tableContainer.insertRow(-1);
+        newRow.innerHTML = tableHTML;
+
     } catch (error) {
         console.error('Error en la solicitud:', error);
     }
 }
 
-// Ejecutar las funciones para obtener los datos
-fetchDataSequentially();
-fetchDataConcurrently();
+
+// Manejar el envío del formulario
+document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evitar que se envíe el formulario
+    const cemid = document.getElementById('cemidInput').value.trim();
+    const cemetery = document.getElementById('CemeteryName').value.trim();
+    const mailing = document.getElementById('MailingAddressStreet').value.trim();
+    const village = document.getElementById('VillageMuniCode').value.trim();
+    fetchDataConcurrently(cemid,cemetery,mailing,village);
+});
