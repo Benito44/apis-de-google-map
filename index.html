@@ -3,40 +3,50 @@
     <head>
         <title>Mapa</title>
         <meta charset="UTF-8" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <link rel="stylesheet" href="mapa.css">
-        <script type="module" src="mapa.js"></script>
+        <script src="mapa.js"></script>
         <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIqn9lFCZZSYkpXjxFVGUwNDG3o6t6sgE&callback=crearMapa"></script>
-    </head>
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.min.css" />
+        <script src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></script>
+        </head>
     <body>
         <h2>Mapa Catalunya</h2>
         <form id="searchForm">
-            <label for="cemidInput">Buscar por CEMID:</label>
+            <label for="cemidInput">Buscar per ID del Cementiri:</label>
             <input type="number" id="cemidInput" name="cemid" max="62018">
             <br><br>
-            <label for="CemeteryName">Buscar por CemeteryName:</label>
+            <label for="CemeteryName">Buscar per Nom del Cementiri:</label>
             <input type="text" id="CemeteryName" name="cemetery">
             <br><br>
-            <label for="MailingAddressStreet">Buscar por MailingAddressStreet:</label>
+            <label for="MailingAddressStreet">Buscar per Adreça:</label>
             <select id="MailingAddressStreet" name="mailing">
-                <option value="">Selecciona una dirección de correo</option>
+                <option value="">Selecciona una direcció</option>
             </select>
             <br><br>
             
-            <label for="CityTownName">Buscar por CityTownName:</label>
+            <label for="CityTownName">Buscar per Nom de la Ciutat:</label>
             <input type="text" id="CityTownName" name="TownName">
             <br><br>
-            <button type="submit">Buscar</button>
+            <button type="submit">Cerca</button>
         </form>
         <div id="paginationControls"></div>
-        <div id="tableContainer">
-            <table border="1">
-                <tr>
-                    <th>CEMID</th><th>CemeteryName</th><th>MailingAddressStreet</th><th>CityTownName</th>
-                </tr>
-                <tbody id="resultTableBody"></tbody>
-            </table>
-        </div>
         
         <div id="mapa" class="mapa"></div>
+        <div id="contenidorTaula">
+            <table  border="1">
+                <thead>
+                    <tr>
+                        <th>CEMID</th>
+                        <th>CemeteryName</th>
+                        <th>MailingAddressStreet</th>
+                        <th>CityTownName</th>
+                    </tr>
+                </thead>
+                
+                <tbody id="taulaResultats">
+                </tbody>
+            </table>
+        </div>
     </body>
 </html>

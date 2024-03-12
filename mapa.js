@@ -1,6 +1,5 @@
 let gMaps;    // Mapa Google Maps
 let gMark;    // Marcador Institut
-
 // Crear marcador de Google Maps
 function crearMarcador(latitut, longitut, text) {
     return new google.maps.Marker(
@@ -45,15 +44,15 @@ const url1 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct
 const url2 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct CemeteryName';
 const url3 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct MailingAddressStreet';
 const url4 = 'https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct CityTownName';
-// Función para cargar las direcciones de correo electrónico disponibles
+
 async function cargarDireccionesCorreo() {
     try {
         const response = await fetch(url3);
         const data = await response.json();
 
-        const selectMailing = document.getElementById('MailingAddressStreet');
-        // Limpiar opciones anteriores
-        selectMailing.innerHTML = '<option value="">Selecciona una dirección de correo</option>';
+        const selectMailing = document.getElementById('MailingAddressStreet')
+
+        selectMailing.innerHTML = '<option value="">Selecciona una direcció</option>';
 
         data.forEach(item => {
             const mailingAddress = item.MailingAddressStreet;
@@ -67,20 +66,24 @@ async function cargarDireccionesCorreo() {
     }
 }
 
-// Llamar a la función para cargar las direcciones de correo al cargar la página
 window.addEventListener('load', cargarDireccionesCorreo);
 
 async function fetchDataConcurrently(cemid, cemetery, mailing, TownName) {
     try {
-        const queryParams = [];
-        if (cemid) queryParams.push(`CEMID="${cemid}"`);
-        if (cemetery) queryParams.push(`CemeteryName="${cemetery}"`);
-        if (mailing) queryParams.push(`MailingAddressStreet="${mailing}"`);
-        if (TownName) {queryParams.push(`CityTownName="${TownName}"`) } else { TownName = '';};
+        let queryString = "";
 
-        const queryString = queryParams.join(" AND ");
+        if (cemid || cemetery || mailing || TownName) {
+            const queryParams = [];
 
-        const url = `https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct CEMID, CemeteryName, MailingAddressStreet, CityTownName, Latitude, Longitude WHERE ${queryString}`;
+            if (cemid) queryParams.push(`CEMID="${cemid}"`);
+            if (cemetery) queryParams.push(`CemeteryName="${cemetery}"`);
+            if (mailing) queryParams.push(`MailingAddressStreet="${mailing}"`);
+            if (TownName) queryParams.push(`CityTownName="${TownName}"`);
+
+            queryString = "WHERE " + queryParams.join(" AND ");
+        }
+
+        const url = `https://data.ny.gov/resource/bvve-d2q8.json?$query=select distinct CEMID, CemeteryName, MailingAddressStreet, CityTownName, Latitude, Longitude ${queryString}`;
         
         const response = await fetch(url);
         const data = await response.json();
@@ -92,29 +95,32 @@ async function fetchDataConcurrently(cemid, cemetery, mailing, TownName) {
                 const { CEMID, CemeteryName, MailingAddressStreet, CityTownName, Latitude, Longitude } = item;
                 tableHTML += `<tr><td>${CEMID}</td><td>${CemeteryName}</td><td>${MailingAddressStreet}</td><td>${CityTownName}</td></tr>`;
                 if (Latitude && Longitude) {
-
                     marcarSaPa(parseFloat(Latitude), parseFloat(Longitude),CemeteryName);
                 }
             });
 
         } else {
-            alert("No se encontraron registros con los criterios de búsqueda proporcionados.");
+            alert("No s'han trobat registres amb els criteris de cerca proporcionats.");
         }
 
-        const tableContainer = document.getElementById('resultTableBody');
-        tableContainer.innerHTML = tableHTML;
+        const contenidorTaula = document.getElementById('taulaResultats');
+        contenidorTaula.innerHTML = tableHTML;
     } catch (error) {
         console.error('Error en la solicitud:', error);
     }
 }
 
 
-// Manejar el envío del formulario
+
+document.addEventListener('DOMContentLoaded',function() {
 document.getElementById('searchForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evitar que se envíe el formulario
+    event.preventDefault(); 
     const cemid = document.getElementById('cemidInput').value.trim();
     const cemetery = document.getElementById('CemeteryName').value.trim();
     const mailing = document.getElementById('MailingAddressStreet').value.trim();
     const TownName = document.getElementById('CityTownName').value.trim();
     fetchDataConcurrently(cemid,cemetery,mailing,TownName);
+});
+
+let table = new DataTable('#myTable');
 });
