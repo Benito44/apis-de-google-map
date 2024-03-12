@@ -11,28 +11,32 @@
         <h2>Mapa Catalunya</h2>
         <form id="searchForm">
             <label for="cemidInput">Buscar por CEMID:</label>
-            <input type="text" id="cemidInput" name="cemid">
+            <input type="number" id="cemidInput" name="cemid" max="62018">
             <br><br>
             <label for="CemeteryName">Buscar por CemeteryName:</label>
             <input type="text" id="CemeteryName" name="cemetery">
             <br><br>
             <label for="MailingAddressStreet">Buscar por MailingAddressStreet:</label>
-            <input type="text" id="MailingAddressStreet" name="mailing">
+            <select id="MailingAddressStreet" name="mailing">
+                <option value="">Selecciona una dirección de correo</option>
+            </select>
             <br><br>
-            <label for="VillageMuniCode">Buscar por VillageMuniCode:</label>
-            <input type="text" id="VillageMuniCode" name="village">
+            
+            <label for="CityTownName">Buscar por CityTownName:</label>
+            <input type="text" id="CityTownName" name="TownName">
             <br><br>
             <button type="submit">Buscar</button>
         </form>
-        <div>
-            <table border="1" >
+        <div id="paginationControls"></div>
+        <div id="tableContainer">
+            <table border="1">
                 <tr>
-                    <th>CEMID</th><th>CemeteryName</th><th>MailingAddressStreet</th><th>VillageMuniCode</th>
+                    <th>CEMID</th><th>CemeteryName</th><th>MailingAddressStreet</th><th>CityTownName</th>
                 </tr>
-                <tbody id="tableContainer">
-
-                </tbody>
+                <tbody id="resultTableBody"></tbody>
+            </table>
         </div>
+        
         <div id="mapa" class="mapa"></div>
     </body>
 </html>
